@@ -2,13 +2,18 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { loginSchema, type LoginInput } from "@/lib/validations/auth";
+import { ApiError } from "@/lib/api/client";
+import { authService } from "@/lib/services/auth.service";
+import type { LoginInput } from "@/lib/types/auth";
+import { loginSchema } from "@/lib/validations/auth";
 import { AuthShell } from "./AuthShell";
 import { FormField } from "./FormField";
 
 export function LoginForm() {
+  const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
 
   const {
@@ -27,9 +32,14 @@ export function LoginForm() {
     setFormError(null);
 
     try {
-      console.log("Login:", data);
-    } catch {
-      setFormError("Something went wrong. Please try again.");
+      await authService.login(data);
+      router.push("/");
+    } catch (error) {
+      setFormError(
+        error instanceof ApiError
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
     }
   }
 

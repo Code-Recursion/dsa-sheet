@@ -2,13 +2,18 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
+import { ApiError } from "@/lib/api/client";
+import { authService } from "@/lib/services/auth.service";
+import type { RegisterInput } from "@/lib/types/auth";
+import { registerSchema } from "@/lib/validations/auth";
 import { AuthShell } from "./AuthShell";
 import { FormField } from "./FormField";
 
 export function RegisterForm() {
+  const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
 
   const {
@@ -29,11 +34,18 @@ export function RegisterForm() {
     setFormError(null);
 
     try {
-      // Wire to your auth API when ready
-      await new Promise((resolve) => setTimeout(resolve, 600));
-      console.log("Register:", data);
-    } catch {
-      setFormError("Something went wrong. Please try again.");
+      await authService.register({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      });
+      router.push("/login");
+    } catch (error) {
+      setFormError(
+        error instanceof ApiError
+          ? error.message
+          : "Something went wrong. Please try again.",
+      );
     }
   }
 
