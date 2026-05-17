@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import { ApiError } from "@/lib/api/client";
 import { authService } from "@/lib/services/auth.service";
 import type { RegisterInput } from "@/lib/types/auth";
@@ -56,20 +58,13 @@ export function RegisterForm() {
       footer={
         <>
           Already have an account?{" "}
-          <Link
-            href="/login"
-            className="font-medium text-indigo-600 hover:text-indigo-500 dark:text-indigo-400 dark:hover:text-indigo-300"
-          >
+          <Link href="/login" className="font-medium text-primary hover:underline">
             Sign in
           </Link>
         </>
       }
     >
-      <form
-        onSubmit={handleSubmit(onSubmit)}
-        className="space-y-5"
-        noValidate
-      >
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4" noValidate>
         <FormField
           label="Full name"
           registration={register("name")}
@@ -103,18 +98,14 @@ export function RegisterForm() {
         />
 
         {formError ? (
-          <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300">
-            {formError}
-          </p>
+          <Alert variant="destructive">
+            <AlertDescription>{formError}</AlertDescription>
+          </Alert>
         ) : null}
 
-        <button
-          type="submit"
-          disabled={isSubmitting}
-          className="w-full rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 disabled:cursor-not-allowed disabled:opacity-60 dark:bg-indigo-500 dark:hover:bg-indigo-400"
-        >
+        <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
           {isSubmitting ? "Creating account…" : "Create account"}
-        </button>
+        </Button>
       </form>
     </AuthShell>
   );
