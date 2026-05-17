@@ -41,7 +41,7 @@ export function RegisterForm() {
         email: data.email,
         password: data.password,
       });
-      router.push("/login");
+      router.push("/dashboard");
     } catch (error) {
       setFormError(
         error instanceof ApiError

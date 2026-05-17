@@ -19,4 +19,10 @@ export const authService = {
       body: JSON.stringify(data),
     });
   },
+
+  logout() {
+    return apiRequest<{ success: true }>("/api/auth/logout", {
+      method: "POST",
+    });
+  },
 };

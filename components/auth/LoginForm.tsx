@@ -35,7 +35,7 @@ export function LoginForm() {
 
     try {
       await authService.login(data);
-      router.push("/");
+      router.push("/dashboard");
     } catch (error) {
       setFormError(
         error instanceof ApiError
