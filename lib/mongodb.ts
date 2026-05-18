@@ -11,6 +11,10 @@ if (!cached) {
   cached = (global as any).mongoose = { conn: null, promise: null };
 }
 
+// Disable Mongoose query buffering globally so it fails immediately with the true error
+// instead of hanging the server and masking connection issues
+mongoose.set("bufferCommands", false);
+
 export async function connectDB() {
   const MONGODB_URI = process.env.MONGODB_URI;
 
@@ -28,6 +32,7 @@ export async function connectDB() {
     console.log("connectDB: Establishing new MongoDB connection...");
     const opts = {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 5000, // Fail fast (5s) if MongoDB is unreachable (e.g. IP whitelist block)
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongooseInstance) => {
