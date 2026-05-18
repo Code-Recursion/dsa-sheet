@@ -54,11 +54,36 @@ export function DashboardTable({ topics }: DashboardTableProps) {
     buildInitialCompletion(topics),
   );
 
-  function setProblemCompleted(problemId: string, completed: boolean) {
+  async function setProblemCompleted(problemId: string, completed: boolean) {
+    // Optimistically update the UI
     setCompletionByProblemId((current) => ({
       ...current,
       [problemId]: completed,
     }));
+
+    try {
+      const response = await fetch("/api/progress", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          problemId,
+          completed,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to update progress");
+      }
+    } catch (error) {
+      console.error("Failed to update progress:", error);
+      // Revert optimistic update on failure
+      setCompletionByProblemId((current) => ({
+        ...current,
+        [problemId]: !completed,
+      }));
+    }
   }
 
   return (
