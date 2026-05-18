@@ -4,7 +4,7 @@ export async function GET() {
     try {
         return NextResponse.json({
             success: true,
-            message: `Server is up ${Date.now()}`,
+            message: `Server is up ${new Date()}`,
         });
     } catch (error) {
         console.error(error);

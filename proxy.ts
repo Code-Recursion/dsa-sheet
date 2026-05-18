@@ -9,7 +9,7 @@ export function proxy(request: NextRequest) {
   console.log("QUERY:", request.nextUrl.search);
   console.log(
     "TOKEN:",
-    request.cookies.get("token")?.value || "NO_TOKEN"
+    request.cookies.get("auth_token")?.value || "NO_TOKEN"
   );
   console.log("=============================");
 
