@@ -2,13 +2,13 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   console.log("========== REQUEST ==========");
   console.log("METHOD:", request.method);
   console.log("PATH:", request.nextUrl.pathname);
   console.log("QUERY:", request.nextUrl.search);
   console.log(
-    "TOKEN:",   
+    "TOKEN:",
     request.cookies.get("token")?.value || "NO_TOKEN"
   );
   console.log("=============================");
