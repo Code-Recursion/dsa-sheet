@@ -1,4 +1,5 @@
 import { getUserFromToken } from "@/lib/auth/jwt";
+import { connectDB } from "@/lib/mongodb";
 
 import Topic from "@/lib/models/Topic";
 import Problem from "@/lib/models/Problem";
@@ -14,8 +15,11 @@ export async function getDashboardData({
   page,
   limit,
 }: DashboardParams) {
+  await connectDB();
+
   const user = await getUserFromToken();
   console.log('user', user)
+
 
   if (!user) {
     throw new Error("Unauthorized");

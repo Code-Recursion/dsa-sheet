@@ -1,55 +1,49 @@
-import { connectDB } from "@/lib/mongodb";
-import type { AuthUser } from "@/lib/types/auth";
-import { User } from "../models/User";
+import mongoose from "mongoose";
 
-export type StoredUser = AuthUser & {
-  passwordHash: string;
-};
+const MONGODB_URI = process.env.MONGODB_URI!;
 
-export function toPublicUser(user: any): AuthUser {
-  return {
-    id: user._id.toString(),
-    name: user.name,
-    email: user.email,
+if (!MONGODB_URI) {
+  throw new Error("Missing MONGODB_URI");
+}
+
+declare global {
+  var mongooseConn: {
+    conn: typeof mongoose | null;
+    promise: Promise<typeof mongoose> | null;
   };
 }
 
-export async function findUserByEmail(email: string) {
-  await connectDB();
+global.mongooseConn ||= {
+  conn: null,
+  promise: null,
+};
 
-  return await User.findOne({
-    email: email.toLowerCase(),
-  }).lean();
-}
-
-export async function findUserById(id: string) {
-  await connectDB();
-
-  return await User.findById(id).lean();
-}
-
-export async function createUser(input: {
-  name: string;
-  email: string;
-  passwordHash: string;
-}) {
-  await connectDB();
-
-  const normalizedEmail = input.email.toLowerCase();
-
-  const existingUser = await User.findOne({
-    email: normalizedEmail,
-  });
-
-  if (existingUser) {
-    return null;
+export async function connectDB() {
+  if (global.mongooseConn.conn) {
+    return global.mongooseConn.conn;
   }
 
-  const user = await User.create({
-    name: input.name.trim(),
-    email: normalizedEmail,
-    passwordHash: input.passwordHash,
-  });
+  if (!global.mongooseConn.promise) {
+    console.log("Connecting MongoDB...");
 
-  return user.toObject();
+    global.mongooseConn.promise =
+      mongoose.connect(MONGODB_URI, {
+        bufferCommands: false,
+      });
+  }
+
+  try {
+    global.mongooseConn.conn =
+      await global.mongooseConn.promise;
+
+    console.log("MongoDB Connected");
+
+    return global.mongooseConn.conn;
+  } catch (error) {
+    global.mongooseConn.promise = null;
+
+    console.error("Mongo Error", error);
+
+    throw error;
+  }
 }
