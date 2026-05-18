@@ -16,21 +16,50 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Design Decisions
 
-## Learn More
+### Separate User Progress Collection
 
-To learn more about Next.js, take a look at the following resources:
+I kept user progress in a separate collection instead of storing completed problems directly inside the user document. Since progress data updates frequently, separating it keeps user documents smaller and makes updates simpler and more scalable.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+---
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### Separate Topics and Problems
 
-## Deploy on Vercel
+Topics and problems were modeled separately to keep the structure flexible and easier to maintain. A topic can contain multiple problems, and this structure also makes topic-wise filtering and pagination easier to implement.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+---
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### JWT Authentication with HTTP-only Cookies + Securing from XSS attacks
+
+JWT-based authentication was used with secure HTTP-only cookies. This keeps the authentication flow stateless and works well for scalable deployments since no server-side session storage is required.
+
+---
+
+### SSR for Dashboard
+
+The dashboard was rendered using SSR because it contains user-specific progress data that should always be up to date after login. This also keeps authentication and protected data handling on the server side.
+
+---
+
+### SSG Consideration for Topic Pages - Future Consideration
+
+Topic detail pages can be converted to SSG in the future since topic content changes very rarely. This can reduce server load and improve performance using CDN caching.
+
+---
+
+### Pagination - Future Considerations
+
+Even though the current dataset is small, APIs were designed with pagination support (`page` and `limit`) so the system can handle larger datasets more efficiently in the future.
+
+---
+
+## Scalability Considerations
+
+* Added separate collections for users, topics, problems, and user progress to avoid oversized documents.
+* APIs were designed in a stateless way using JWT authentication, making horizontal scaling easier.
+* Database indexing can be added on fields like `userId`, `problemId`, and `topicId` for faster lookups.
+* Topic pages can later be cached or statically generated since they do not change frequently.
+* If traffic grows significantly, Redis caching and cursor-based pagination can be introduced.
+* Cursor Based pagination
