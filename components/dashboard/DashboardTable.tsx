@@ -104,28 +104,28 @@ export function DashboardTable({ topics }: DashboardTableProps) {
                 No problems in this page for this topic.
               </p>
             ) : (
-              <Table>
+              <Table className="table-fixed w-full">
                 <TableHeader>
                   <TableRow>
-                    <TableHead className="w-12">#</TableHead>
-                    <TableHead>Title</TableHead>
+                    <TableHead className="w-12 text-center">#</TableHead>
+                    <TableHead className="w-[300px]">Title</TableHead>
                     <TableHead>Subtopic</TableHead>
                     <TableHead>Difficulty</TableHead>
                     <TableHead>Tags</TableHead>
                     <TableHead>Resources</TableHead>
-                    <TableHead className="w-12 text-center">Done</TableHead>
+                    <TableHead className="w-20 text-center">Done</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {topic.problems.map((problem, index) => (
                     <TableRow key={problem.id}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell className="font-medium">{problem.title}</TableCell>
-                      <TableCell>{problem.subtopic}</TableCell>
-                      <TableCell>
+                      <TableCell className="text-center font-medium">{index + 1}</TableCell>
+                      <TableCell className="font-medium whitespace-normal break-words">{problem.title}</TableCell>
+                      <TableCell className="whitespace-normal break-words">{problem.subtopic}</TableCell>
+                      <TableCell className="whitespace-normal">
                         <DifficultyBadge difficulty={problem.difficulty} />
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="whitespace-normal">
                         <div className="flex flex-wrap gap-1">
                           {problem.tags.map((tag) => (
                             <Badge key={tag} variant="secondary">
@@ -134,7 +134,7 @@ export function DashboardTable({ topics }: DashboardTableProps) {
                           ))}
                         </div>
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="whitespace-normal">
                         <div className="flex flex-wrap gap-2">
                           {(
                             Object.keys(resourceLabels) as Array<
