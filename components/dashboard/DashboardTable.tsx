@@ -87,8 +87,8 @@ export function DashboardTable({ topics }: DashboardTableProps) {
                     <TableHead>Subtopic</TableHead>
                     <TableHead>Difficulty</TableHead>
                     <TableHead>Tags</TableHead>
-                    <TableHead className="w-12 text-center">Done</TableHead>
                     <TableHead>Resources</TableHead>
+                    <TableHead className="w-12 text-center">Done</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -108,16 +108,6 @@ export function DashboardTable({ topics }: DashboardTableProps) {
                             </Badge>
                           ))}
                         </div>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <ProblemCompleteCheckbox
-                          problemId={problem.id}
-                          problemTitle={problem.title}
-                          completed={completionByProblemId[problem.id] ?? false}
-                          onCompletedChange={(completed) =>
-                            setProblemCompleted(problem.id, completed)
-                          }
-                        />
                       </TableCell>
                       <TableCell>
                         <div className="flex flex-wrap gap-2">
@@ -144,6 +134,16 @@ export function DashboardTable({ topics }: DashboardTableProps) {
                             );
                           })}
                         </div>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <ProblemCompleteCheckbox
+                          problemId={problem.id}
+                          problemTitle={problem.title}
+                          completed={completionByProblemId[problem.id] ?? false}
+                          onCompletedChange={(completed) =>
+                            setProblemCompleted(problem.id, completed)
+                          }
+                        />
                       </TableCell>
                     </TableRow>
                   ))}

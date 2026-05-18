@@ -5,7 +5,7 @@ import { problems } from "@/data/problems";
 import Problem from "@/lib/models/Problem";
 import Topic from "@/lib/models/Topic";
 
-const MONGODB_URI = process.env.MONGODB_URI!;
+const MONGODB_URI = "mongodb+srv://helloajaypro_db_user:VGLuyTiT4uWJGOGB@project-cluster.wn1upul.mongodb.net/dsa_sheet?appName=project-cluster";
 
 async function seed() {
   try {

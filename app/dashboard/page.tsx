@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { DashboardTable } from "@/components/dashboard/DashboardTable";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -85,6 +86,10 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
       </DashboardShell>
     );
   } catch (error) {
+    if (error instanceof ApiError && error.status === 401) {
+      redirect("/login");
+    }
+
     const message =
       error instanceof ApiError
         ? error.message

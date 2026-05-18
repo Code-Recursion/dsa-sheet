@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import { dashboardSampleData } from "@/lib/data/dashboard-sample";
-import { paginateDashboardData } from "@/lib/data/dashboard-pagination";
+import { getDashboardData } from "@/lib/data/dashboard";
+import { jsonError } from "@/lib/auth/api";
 
 function parsePositiveInt(value: string | null, fallback: number): number {
   const parsed = Number(value);
@@ -12,14 +12,25 @@ function parsePositiveInt(value: string | null, fallback: number): number {
 }
 
 export async function GET(request: Request) {
-  const { searchParams } = new URL(request.url);
-  const page = parsePositiveInt(searchParams.get("page"), 1);
-  const limit = parsePositiveInt(searchParams.get("limit"), 20);
+  try {
+    const { searchParams } = new URL(request.url);
+    const page = parsePositiveInt(searchParams.get("page"), 1);
+    const limit = parsePositiveInt(searchParams.get("limit"), 20);
 
-  const data = paginateDashboardData(dashboardSampleData, page, limit);
+    const data = await getDashboardData({ page, limit });
 
-  return NextResponse.json({
-    success: true,
-    data,
-  });
+    return NextResponse.json({
+      success: true,
+      data,
+    });
+  } catch (error: any) {
+    if (error.message === "Unauthorized") {
+      return jsonError("Unauthorized", 401);
+    }
+    if (error.message === "User not found") {
+      return jsonError("User not found", 404);
+    }
+    console.error("Dashboard GET error:", error);
+    return jsonError(error.message || "Internal Server Error", 500);
+  }
 }

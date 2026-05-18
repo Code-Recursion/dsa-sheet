@@ -15,10 +15,17 @@ export function jsonValidationError(error: ZodError) {
 }
 
 export async function jsonAuthSuccess(user: StoredUser) {
+  const userId = user.id || (user as any)._id?.toString();
+  if (!userId) {
+    throw new Error("User ID is required to generate token");
+  }
+
   const token = await signAuthToken({
-    sub: user.id,
+    sub: userId,
     email: user.email,
   });
+
+  console.log('jsonAuthSuccess', token)
 
   const response = NextResponse.json({ user: toPublicUser(user) satisfies AuthUser });
   setAuthCookie(response, token);

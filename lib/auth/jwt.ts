@@ -1,4 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
+import { cookies } from "next/headers";
+import { AUTH_COOKIE_NAME } from "@/lib/auth/constants";
 
 export type AuthTokenPayload = {
   sub: string;
@@ -41,4 +43,21 @@ export async function verifyAuthToken(token: string) {
     sub: payload.sub,
     email: payload.email,
   } satisfies AuthTokenPayload;
+}
+
+export async function getUserFromToken() {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get(AUTH_COOKIE_NAME)?.value;
+    console.log('TOKEN bat', token)
+    if (!token) {
+      return null;
+    }
+    const verifiedToken = await verifyAuthToken(token);
+    console.log('verif', verifiedToken)
+    return verifiedToken
+  } catch (err) {
+    console.error('err xxx', err)
+    return null;
+  }
 }
