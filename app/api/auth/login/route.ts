@@ -24,7 +24,8 @@ export async function POST(request: Request) {
     }
 
     return jsonAuthSuccess(user);
-  } catch {
+  } catch(err) {
+    console.error("error occured whie loggin in ", err);
     return jsonError("Unable to sign in. Please try again.", 500);
   }
 }
