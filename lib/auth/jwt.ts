@@ -8,11 +8,8 @@ export type AuthTokenPayload = {
 };
 
 function getJwtSecret() {
-  const secret =
-    process.env.JWT_SECRET ??
-    (process.env.NODE_ENV === "development"
-      ? "dev-only-jwt-secret-change-in-production"
-      : undefined);
+  const secret = process.env.JWT_SECRET;
+
 
   if (!secret) {
     throw new Error("JWT_SECRET is not configured");
