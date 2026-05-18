@@ -1,58 +1,55 @@
-import mongoose from "mongoose";
+import { connectDB } from "@/lib/mongodb";
+import type { AuthUser } from "@/lib/types/auth";
+import { User } from "../models/User";
 
-interface MongooseCache {
-  conn: typeof mongoose | null;
-  promise: Promise<typeof mongoose> | null;
+export type StoredUser = AuthUser & {
+  passwordHash: string;
+};
+
+export function toPublicUser(user: any): AuthUser {
+  return {
+    id: user._id.toString(),
+    name: user.name,
+    email: user.email,
+  };
 }
 
-let cached: MongooseCache = (global as any).mongoose;
+export async function findUserByEmail(email: string) {
+  await connectDB();
 
-if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null };
+  return await User.findOne({
+    email: email.toLowerCase(),
+  }).lean();
 }
 
-// Disable Mongoose query buffering globally so it fails immediately with the true error
-// instead of hanging the server and masking connection issues
-mongoose.set("bufferCommands", false);
+export async function findUserById(id: string) {
+  await connectDB();
 
-export async function connectDB() {
-  const MONGODB_URI = process.env.MONGODB_URI;
+  return await User.findById(id).lean();
+}
 
-  if (!MONGODB_URI) {
-    console.error("connectDB error: MONGODB_URI is undefined");
-    throw new Error("Missing MONGODB_URI environment variable");
+export async function createUser(input: {
+  name: string;
+  email: string;
+  passwordHash: string;
+}) {
+  await connectDB();
+
+  const normalizedEmail = input.email.toLowerCase();
+
+  const existingUser = await User.findOne({
+    email: normalizedEmail,
+  });
+
+  if (existingUser) {
+    return null;
   }
 
-  if (cached.conn) {
-    console.log("connectDB: Using cached MongoDB connection");
-    return cached.conn;
-  }
+  const user = await User.create({
+    name: input.name.trim(),
+    email: normalizedEmail,
+    passwordHash: input.passwordHash,
+  });
 
-  if (!cached.promise) {
-    console.log("connectDB: Establishing new MongoDB connection...");
-    const opts = {
-      bufferCommands: false,
-      serverSelectionTimeoutMS: 5000, // Fail fast (5s) if MongoDB is unreachable (e.g. IP whitelist block)
-    };
-
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongooseInstance) => {
-      console.log("connectDB: MongoDB connected successfully");
-      return mongooseInstance;
-    }).catch((err) => {
-      console.error("connectDB: MongoDB connection failed:", err);
-      cached.promise = null;
-      throw err;
-    });
-  } else {
-    console.log("connectDB: Awaiting existing MongoDB connection promise...");
-  }
-
-  try {
-    cached.conn = await cached.promise;
-  } catch (e) {
-    cached.promise = null;
-    throw e;
-  }
-
-  return cached.conn;
+  return user.toObject();
 }
