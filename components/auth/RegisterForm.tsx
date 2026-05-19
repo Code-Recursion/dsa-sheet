@@ -17,6 +17,7 @@ import { FormField } from "./FormField";
 export function RegisterForm() {
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const {
     register,
@@ -41,6 +42,7 @@ export function RegisterForm() {
         email: data.email,
         password: data.password,
       });
+      setIsRedirecting(true);
       router.push("/dashboard");
     } catch (error) {
       setFormError(
@@ -50,6 +52,8 @@ export function RegisterForm() {
       );
     }
   }
+
+  const isLoading = isSubmitting || isRedirecting;
 
   return (
     <AuthShell
@@ -71,6 +75,7 @@ export function RegisterForm() {
           error={errors.name?.message}
           autoComplete="name"
           placeholder="Alex Johnson"
+          disabled={isLoading}
         />
         <FormField
           label="Email"
@@ -79,6 +84,7 @@ export function RegisterForm() {
           error={errors.email?.message}
           autoComplete="email"
           placeholder="you@example.com"
+          disabled={isLoading}
         />
         <FormField
           label="Password"
@@ -87,6 +93,7 @@ export function RegisterForm() {
           error={errors.password?.message}
           autoComplete="new-password"
           placeholder="At least 8 characters"
+          disabled={isLoading}
         />
         <FormField
           label="Confirm password"
@@ -95,6 +102,7 @@ export function RegisterForm() {
           error={errors.confirmPassword?.message}
           autoComplete="new-password"
           placeholder="Repeat your password"
+          disabled={isLoading}
         />
 
         {formError ? (
@@ -103,8 +111,8 @@ export function RegisterForm() {
           </Alert>
         ) : null}
 
-        <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
-          {isSubmitting ? "Creating account…" : "Create account"}
+        <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+          {isRedirecting ? "Redirecting…" : isSubmitting ? "Creating account…" : "Create account"}
         </Button>
       </form>
     </AuthShell>

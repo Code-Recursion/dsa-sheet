@@ -10,6 +10,7 @@ type FormFieldProps = {
   type?: "text" | "email" | "password";
   autoComplete?: string;
   placeholder?: string;
+  disabled?: boolean;
 };
 
 export function FormField({
@@ -19,6 +20,7 @@ export function FormField({
   type = "text",
   autoComplete,
   placeholder,
+  disabled,
 }: FormFieldProps) {
   const id = registration.name;
 
@@ -33,6 +35,7 @@ export function FormField({
         aria-invalid={!!error}
         aria-describedby={error ? `${id}-error` : undefined}
         className={cn(error && "border-destructive")}
+        disabled={disabled}
         {...registration}
       />
       {error ? (

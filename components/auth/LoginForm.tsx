@@ -17,6 +17,7 @@ import { FormField } from "./FormField";
 export function LoginForm() {
   const router = useRouter();
   const [formError, setFormError] = useState<string | null>(null);
+  const [isRedirecting, setIsRedirecting] = useState(false);
 
   const {
     register,
@@ -35,6 +36,7 @@ export function LoginForm() {
 
     try {
       await authService.login(data);
+      setIsRedirecting(true);
       router.push("/dashboard");
     } catch (error) {
       setFormError(
@@ -44,6 +46,8 @@ export function LoginForm() {
       );
     }
   }
+
+  const isLoading = isSubmitting || isRedirecting;
 
   return (
     <AuthShell
@@ -66,6 +70,7 @@ export function LoginForm() {
           error={errors.email?.message}
           autoComplete="email"
           placeholder="you@example.com"
+          disabled={isLoading}
         />
         <FormField
           label="Password"
@@ -74,6 +79,7 @@ export function LoginForm() {
           error={errors.password?.message}
           autoComplete="current-password"
           placeholder="••••••••"
+          disabled={isLoading}
         />
 
         {formError ? (
@@ -82,8 +88,8 @@ export function LoginForm() {
           </Alert>
         ) : null}
 
-        <Button type="submit" className="w-full" size="lg" disabled={isSubmitting}>
-          {isSubmitting ? "Signing in…" : "Sign in"}
+        <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+          {isRedirecting ? "Redirecting…" : isSubmitting ? "Signing in…" : "Sign in"}
         </Button>
       </form>
     </AuthShell>
