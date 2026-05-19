@@ -104,7 +104,7 @@ export function DashboardTable({ topics }: DashboardTableProps) {
                 No problems in this page for this topic.
               </p>
             ) : (
-              <Table className="table-fixed w-full">
+              <Table className="md:table-fixed w-full">
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-12 text-center">#</TableHead>
