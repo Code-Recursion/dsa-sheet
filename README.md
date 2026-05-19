@@ -16,6 +16,9 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
+## Architecture (HLD & LLD)
+
+![System Architecture (HLD & LLD)](docs/HLD-LLD.png)
 
 ## Design Decisions
 
@@ -63,3 +66,4 @@ Even though the current dataset is small, APIs were designed with pagination sup
 * Topic pages can later be cached or statically generated since they do not change frequently.
 * If traffic grows significantly, Redis caching and cursor-based pagination can be introduced.
 * Cursor Based pagination
+
